@@ -1,9 +1,9 @@
-import java.util.ArrayList;
-
 public class BTree {
 	public Node root;
-	private ArrayList<Integer> in = new ArrayList<Integer>();
-	private ArrayList<Integer> pre= new ArrayList<Integer>();
+	private int[] in ;//in-order list 
+	private int[] pre;//pre-order list
+	private int preIndex;// short-cut bad implementation for my convenience 
+	
 	
 	public BTree ()
 	{
@@ -15,54 +15,46 @@ public class BTree {
 		root = new Node (x);
 	}
 	
-	//construct a tree given inorder and preoder traversal
-	public BTree (int[] i, int[] p)
+	public BTree (int[] in, int[] pre)
 	{
-		if(i.length != p.length)
-		{
-			System.out.println("Not valid input");
-		}
-		else
-		{		
-			for(int val : i)
-			{
-				in.add(val);
-			}
-			
-			for(int val : p)
-			{
-				pre.add(val);
-			}
-			
-			root = buildTree(0, in.size() - 1 , 0);
-		}
+		this.in = in;
+		this.pre = pre;
+		preIndex = 0;
+		
+		root = buildTree(0, this.in.length - 1);
 	}
 	
-	//pre keep counts of the in list
-	private Node buildTree (int inStart, int inEnd, int preStart)
+	//leftIn is the left bound of current in-order list
+	//rightIn is the right bound of the current in-order list
+	private Node buildTree (int leftIn, int rightIn)
 	{
-		if(inStart > inEnd)
+		if(preIndex > pre.length -1)
 		{
 			return null;
 		}
+		//grape the val from pre-order list, and increment the preIndex;
+		int val = pre[preIndex++];
 		
-		Node currentNode = new Node(pre.get(preStart));
-		preStart++;
-		if (inStart == inEnd)
+		Node currentNode = new Node(val);
+		
+		if(leftIn == rightIn)
+		{
 			return currentNode;
+		}
 		
-		int inIndex = findIndex(inStart, inEnd, currentNode.val);
+		//find the first occurrence of the value in the in the given range of order list.
+		int inorderIndex = findIndex(leftIn, rightIn, val);
+		currentNode.left = buildTree(leftIn, inorderIndex - 1);
+		currentNode.right = buildTree(inorderIndex + 1, rightIn);
 		
-		currentNode.left = buildTree (inStart, inIndex - 1, preStart);
-		currentNode.right = buildTree (inIndex + 1, inEnd , preStart);
 		return currentNode;
 	}
 	
-	public int findIndex (int start, int end, int val)
+	private int findIndex (int leftIn, int rightIn, int target)
 	{
-		for(int i = start; i < end; i++)
+		for(int i = leftIn; i < rightIn; i++ )
 		{
-			if(in.get(i) == val)
+			if (in[i] == target)
 			{
 				return i;
 			}
@@ -70,6 +62,30 @@ public class BTree {
 		
 		return -1;
 	}
+	
+	
+	public boolean ifBalanced(Node root)
+	{
+		if(root == null)
+		{
+			return true;
+		}
+		int maxHeight = Math.max(ifBalancedHelper(root.left), ifBalancedHelper(root.right));
+		int minHeight = Math.min(ifBalancedHelper(root.left), ifBalancedHelper(root.right));
+		
+		return (maxHeight - minHeight <= 1);
+	}
+	
+	private int ifBalancedHelper(Node root)
+	{
+		if (root == null)
+		{
+			return 0;
+		}
+		
+		return 1 + ifBalancedHelper(root.left) + ifBalancedHelper(root.right);
+	}
+
 	
 	public void print(Node root) 
 	{
