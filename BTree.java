@@ -1,9 +1,12 @@
+import java.util.ArrayList;
+
 public class BTree {
 	public Node root;
 	private int[] in ;//in-order list 
 	private int[] pre;//pre-order list
 	private int preIndex;// short-cut bad implementation for my convenience 
 	
+	private int[] sortedList;
 	
 	public BTree ()
 	{
@@ -23,6 +26,29 @@ public class BTree {
 		
 		root = buildTree(0, this.in.length - 1);
 	}
+	
+	//4.3 - build the min-height tree
+	public BTree (int[] sorted)
+	{
+		sortedList = sorted;
+		root = buildMinHeightTree(0);
+	}
+	
+	private Node buildMinHeightTree(int index)
+	{
+		if (index > sortedList.length -1  )
+		{
+		 return null;	
+		}
+		
+		Node parent = new Node (sortedList[index]);
+		parent.left = buildMinHeightTree(index*2 + 1);
+		parent.left = buildMinHeightTree(index*2 + 2);
+	
+		
+		return parent;
+	} 
+	
 	
 	//leftIn is the left bound of current in-order list
 	//rightIn is the right bound of the current in-order list
@@ -64,6 +90,7 @@ public class BTree {
 	}
 	
 	
+	//4.1
 	public boolean ifBalanced(Node root)
 	{
 		if(root == null)
@@ -85,8 +112,55 @@ public class BTree {
 		
 		return 1 + ifBalancedHelper(root.left) + ifBalancedHelper(root.right);
 	}
-
 	
+	//4.3 
+	public ArrayList<ArrayList<Node>> findNodePerLever()
+	{
+		ArrayList<ArrayList<Node>> result = new ArrayList<ArrayList<Node>>();
+		
+		if(root == null)
+		{
+			return result;
+		}
+		
+		int level = 0;
+		ArrayList<Node> list = new ArrayList<Node>();//level 0
+		list.add(root);
+		
+		while(true)
+		{
+			ArrayList<Node> nextLevel = new ArrayList<Node>();
+			
+			for(int i = 0; i < result.get(level).size() - 1; i++)
+			{	
+				//grape element from the current level list
+				Node left = result.get(level).get(i).left;
+				Node right = result.get(level).get(i).right;
+				if(left != null)
+				{
+					nextLevel.add(left);
+				}
+				
+				if(right != null)
+				{
+					nextLevel.add(right);
+				}
+			}
+			
+			//check if next level has no element meaning the current levels are all leave
+			if(nextLevel.size() == 0)
+			{
+				break;
+			}
+			else{
+				result.add(level+1, nextLevel);
+			}
+			
+		}
+		
+		return result;
+	}
+
 	public void print(Node root) 
 	{
 		if(root == null)
