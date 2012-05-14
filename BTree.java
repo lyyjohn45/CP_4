@@ -160,17 +160,83 @@ public class BTree {
 		
 		return result;
 	}
+	
+	public Node findTheNextInorder (Node target, Node current)
+	{
+		findTheNextInorder(target, current.left);
+		if(current.val == target.val)
+		{
+			System.out.print("find the target" + target);
+			return findTheNextInorder(target, current); 
+		}
+		findTheNextInorder(target, current.right);
+		
+		return current;
+	}
 
-	public void print(Node root) 
+	//since I don't have a pointer do my parents, fellowing code will be psedo-code
+	public Node findTheSuccussor(Node target)
+	{
+		Node x = findTheNode (target);
+		
+		//if x have the right child, then the successor is the right child
+		//return the right child
+		
+		//else if x does not have a right child
+		//that means the subtree which x is the root, has been already searched, so we need to back to the its parent
+		
+			//if the x is the left child of the parent
+			//which means that the parents is x's successor, because subtree of rooting with x is searched and the next traverse should go to his parent (left-parent-right)
+			//if the x is the right child of the parent
+				//return parent;
+			//which means that this level of left-parent-right search is , so we need findTheSuccussor from its parent level.
+				//return findTheSuccussor(target.parent)
+		
+		return null;
+	}
+	
+	private Node findTheNode(Node target)
 	{
 		if(root == null)
 		{
-			return;
+			return null;
 		}
 		
-		print(root.left);
-		System.out.print(root.val + "->");
-		print(root.right);
+		if(root.val == target.val)
+		{
+			return root;
+		}
+		findTheNode(root.left);
+		findTheNode(root.right);
+		
+		return root;
+	}
+	
+	
+	//4.5
+	boolean found = false;
+	public Node printTheSuccussor(Node root, Node target) 
+	{
+		
+		if(root == null)
+		{
+			return null;
+		}
+		
+		printTheSuccussor(root.left, target);
+		System.out.print(root.val + "-> ");
+		if(root.val == target.val)
+		{
+			found = true;
+		}else if(found == true)
+		{
+			System.out.println(root.val + " is the successor");
+			found = false;
+			return root;
+		}
+		printTheSuccussor(root.right, target);
+		
+		return root;
 	}
 	
 }
