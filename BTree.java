@@ -239,4 +239,43 @@ public class BTree {
 		return root;
 	}
 	
+	//4.6
+	
+	public Node findTheAncestor (Node x, Node y, Node start)
+	{
+		//if all the node are the left of me
+		//then the common ancestor must be in my left tree
+		if(find(start.left, x) && find(start.left, y))
+		{
+			 return findTheAncestor(x, y, start.left);
+		}
+		//if all the node are the right of me
+		//then the common ancestor must be in my right tree
+		if(find(start.right, x) && find(start.right, y))
+		{
+		     return findTheAncestor(x, y , start.right);
+		}
+		
+		//if not fail in case above, meaning i found the node
+		return start;
+	}
+	
+	//helper function for findTheAncestor
+	private boolean find (Node start, Node target)
+	{
+		if(start == null)
+		{
+			return false;
+		}
+		
+		if(start.val == target.val)
+		{
+			return true;
+		}
+		
+		return find(start.left, target) || find(start.right, target);
+	}
+	
+	
+	
 }
