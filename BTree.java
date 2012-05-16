@@ -275,6 +275,31 @@ public class BTree {
 		
 		return find(start.left, target) || find(start.right, target);
 	}
+		
+		//4.7 ifSubtree
+		//this part is to traverse the bigger tree to find a start point
+	public boolean ifSubtree (Node mainTree, Node subTree)
+	{
+		if(subTree == null) return  true;//null is always a subtree of any tree
+		if(mainTree == null) return false;//cannot find a start point in main tree
+		
+		if(mainTree.val == subTree.val)//find a start point, start matching 
+		{
+			return matchTree(mainTree, subTree);
+		}
+		
+		return ifSubtree(mainTree.left, subTree) || ifSubtree(mainTree.right, subTree);
+	}
+	
+	private boolean matchTree(Node r1, Node r2)
+	{
+		if(r1 == null && r2 == null) return true;//traverse all parts of both r1 and r2, no difference find
+		if(r1 == null || r2 == null) return false;//different number of nodes, not a match
+		if(r1.val != r2.val) return false;//node dose not match
+			
+		return matchTree(r1.left, r2.left) && matchTree(r1.right, r2.right);
+	}
+
 	
 	
 	
